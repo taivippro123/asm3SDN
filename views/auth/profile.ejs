@@ -1,0 +1,52 @@
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white border-bottom-0">
+                <h3 class="text-center mb-0">Profile</h3>
+            </div>
+            <div class="card-body">
+                <form action="/auth/profile" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Membername</label>
+                        <input type="text" class="form-control" value="<%= user.membername %>" disabled>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" name="name" value="<%= user.name %>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Year of Birth</label>
+                        <input type="number" class="form-control" name="YOB" value="<%= user.YOB %>" required min="1900" max="<%= new Date().getFullYear() %>">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <input type="text" class="form-control" value="<%= user.isAdmin ? 'Admin' : 'Member' %>" disabled>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-header bg-white border-bottom-0">
+                <h4 class="mb-0">Change Password</h4>
+            </div>
+            <div class="card-body">
+                <form action="/auth/change-password" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" name="currentPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" name="newPassword" required>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-warning">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 

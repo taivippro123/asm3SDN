@@ -1,0 +1,44 @@
+<div class="horizontal-scroll py-2">
+    <% if (players.length === 0) { %>
+        <div>
+            <p class="text-muted">No players found. Please add some players.</p>
+        </div>
+    <% } %>
+    <% players.forEach(player => { %>
+        <div class="player-card card h-100 shadow-sm position-relative mx-2" style="min-width: 270px; max-width: 270px;">
+            <% if (player.isCaptain) { %>
+                <span class="position-absolute top-0 end-0 m-2 px-3 py-1 bg-warning text-dark rounded-pill fw-bold" style="font-size:0.95em;">Captain</span>
+            <% } %>
+            <img src="<%= player.image %>" class="card-img-top" alt="<%= player.playerName %>" style="object-fit:contain;max-height:180px;">
+            <div class="card-body">
+                <h5 class="card-title mb-1"><%= player.playerName %></h5>
+                <div class="mb-2">
+                    <strong>Team:</strong> <%= player.team.teamName %><br>
+                    <strong>Cost:</strong> $<%= player.cost.toLocaleString() %><br>
+                    <strong>Information:</strong> <%= player.information %>
+                </div>
+                <a href="/players/<%= player._id %>" class="btn btn-outline-primary btn-sm">View Details</a>
+            </div>
+        </div>
+    <% }); %>
+</div>
+
+<style>
+.horizontal-scroll {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 24px;
+    padding-bottom: 8px;
+    scroll-snap-type: x mandatory;
+}
+.player-card {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    transition: transform 0.18s;
+}
+.player-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 32px #0002;
+}
+</style>
