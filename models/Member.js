@@ -9,7 +9,7 @@ const memberSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: function() { return !this.googleId; }
     },
     name: {
         type: String,
@@ -17,18 +17,21 @@ const memberSchema = new mongoose.Schema({
     },
     YOB: {
         type: Number,
-        required: true
+        required: function() { return !this.googleId; }
     },
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    googleId: {
+        type: String,
+        default: null
     }
 }, { timestamps: true });
 
 // Hash password before saving
 memberSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
-    
+    if (!this.isModified('password') || this.googleId) return next();
     try {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);

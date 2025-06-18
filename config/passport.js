@@ -1,4 +1,5 @@
 const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const Member = require('../models/Member');
 
 module.exports = function(passport) {
@@ -23,6 +24,30 @@ module.exports = function(passport) {
         })
     );
 
+    passport.use(new GoogleStrategy({
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL
+    },
+    async (accessToken, refreshToken, profile, done) => {
+        try {
+            let member = await Member.findOne({ googleId: profile.id });
+            if (!member) {
+                member = new Member({
+                    googleId: profile.id,
+                    name: profile.displayName,
+                    membername: profile.emails[0].value,
+                    isAdmin: false
+                });
+                await member.save();
+            }
+            return done(null, member);
+        } catch (err) {
+            return done(err, null);
+        }
+    }
+    ));
+
     passport.serializeUser((member, done) => {
         done(null, member.id);
     });
@@ -36,3 +61,5 @@ module.exports = function(passport) {
         }
     });
 }; 
+
+

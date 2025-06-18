@@ -106,4 +106,14 @@ router.post('/change-password', isAuthenticated, async (req, res) => {
     }
 });
 
+// Google OAuth login
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/auth/login', failureFlash: true }),
+  (req, res) => {
+    res.redirect('/');
+  }
+);
+
 module.exports = router; 
