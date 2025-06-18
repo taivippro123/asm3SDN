@@ -36,7 +36,8 @@ router.get('/:id', async (req, res) => {
             req.flash('error_msg', 'Player not found');
             return res.redirect('/players');
         }
-        res.render('players/show', { player });
+        const teams = await Team.find();
+        res.render('players/show', { player, teams });
     } catch (err) {
         req.flash('error_msg', 'Error fetching player');
         res.redirect('/players');

@@ -1,107 +1,139 @@
 <div class="row mb-4 align-items-center">
-    <div class="col-md-6">
-        <h1 class="mb-0">Football Players</h1>
-    </div>
+  <div class="col-md-6 d-flex align-items-center gap-3">
+    <h1 class="mb-0">Football Players</h1>
     <% if (user && user.isAdmin) { %>
-        <div class="col-md-6 text-end">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPlayerModal">
-                <i class="fas fa-plus"></i> Add Player
-            </button>
-        </div>
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPlayerModal">
+        Add Player
+      </button>
     <% } %>
-</div>
-
-<div class="horizontal-scroll py-2">
-    <% if (players.length === 0) { %>
-        <div>
-            <p class="text-muted">No players found. Please add some players.</p>
-        </div>
-    <% } %>
-    <% players.forEach(player => { %>
-        <div class="player-card card h-100 shadow-sm position-relative mx-2" style="min-width: 270px; max-width: 270px;">
-            <% if (player.isCaptain) { %>
-                <span class="position-absolute top-0 end-0 m-2 px-3 py-1 bg-warning text-dark rounded-pill fw-bold" style="font-size:0.95em;">Captain</span>
-            <% } %>
-            <img src="<%= player.image %>" class="card-img-top" alt="<%= player.playerName %>" style="object-fit:contain;max-height:180px;">
-            <div class="card-body">
-                <h5 class="card-title mb-1"><%= player.playerName %></h5>
-                <div class="mb-2">
-                    <strong>Team:</strong> <%= player.team.teamName %><br>
-                    <strong>Cost:</strong> $<%= player.cost.toLocaleString() %><br>
-                    <strong>Information:</strong> <%= player.information %>
-                </div>
-                <a href="/players/<%= player._id %>" class="btn btn-outline-primary btn-sm">View Details</a>
-            </div>
-        </div>
-    <% }); %>
-</div>
-
-<% if (user && user.isAdmin) { %>
-<!-- Add Player Modal (place outside of flex/scroll containers) -->
-<div class="modal fade" id="addPlayerModal" tabindex="-1">
+  </div>
+  <% if (user && user.isAdmin) { %>
+  <!-- Add Player Modal (place outside of flex/scroll containers) -->
+  <div class="modal fade" id="addPlayerModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Add New Player</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <form action="/players" method="POST">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Player Name</label>
-                        <input type="text" class="form-control" name="playerName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Image URL</label>
-                        <input type="url" class="form-control" name="image" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Cost</label>
-                        <input type="number" class="form-control" name="cost" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Team</label>
-                        <select class="form-select" name="team" required>
-                            <% teams.forEach(team => { %>
-                                <option value="<%= team._id %>"><%= team.teamName %></option>
-                            <% }); %>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Information</label>
-                        <textarea class="form-control" name="information" required></textarea>
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" name="isCaptain" id="isCaptain">
-                        <label class="form-check-label" for="isCaptain">Is Captain</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Add Player</button>
-                </div>
-            </form>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Player</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+          ></button>
         </div>
+        <form action="/players" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label class="form-label">Player Name</label>
+              <input
+                type="text"
+                class="form-control"
+                name="playerName"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Image URL</label>
+              <input type="url" class="form-control" name="image" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Cost</label>
+              <input type="number" class="form-control" name="cost" required />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Team</label>
+              <select class="form-select" name="team" required>
+                <% teams.forEach(team => { %>
+                <option value="<%= team._id %>"><%= team.teamName %></option>
+                <% }); %>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Information</label>
+              <textarea
+                class="form-control"
+                name="information"
+                required
+              ></textarea>
+            </div>
+            <div class="mb-3 form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                name="isCaptain"
+                id="isCaptain"
+              />
+              <label class="form-check-label" for="isCaptain">Is Captain</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="submit" class="btn btn-primary">Add Player</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
+  <% } %>
 </div>
-<% } %>
+
+<form class="row g-3 mb-4" method="get" action="">
+  <div class="col-md-5">
+    <input type="text" class="form-control" name="search" placeholder="Search by player name" value="<%= typeof search !== 'undefined' ? search : '' %>">
+  </div>
+  <div class="col-md-4">
+    <select class="form-select" name="team">
+      <option value="">All Teams</option>
+      <% teams.forEach(team => { %>
+        <option value="<%= team._id %>" <%= selectedTeam == team._id ? 'selected' : '' %>><%= team.teamName %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="col-md-3">
+    <button type="submit" class="btn btn-primary w-100">Search</button>
+  </div>
+</form>
+
+<div class="row g-4">
+  <% if (players.length === 0) { %>
+    <div class="col-12">
+      <p class="text-muted">No players found.</p>
+    </div>
+  <% } %>
+  <% players.forEach(player => { %>
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 d-flex">
+      <div class="player-card card h-100 shadow-sm position-relative w-100">
+        <% if (player.isCaptain) { %>
+          <span class="position-absolute top-0 end-0 m-2 px-3 py-1 bg-warning text-dark rounded-pill fw-bold" style="font-size: 0.95em">Captain</span>
+        <% } %>
+        <img src="<%= player.image %>" class="card-img-top" alt="<%= player.playerName %>" style="object-fit: contain; max-height: 180px" />
+        <div class="card-body">
+          <h5 class="card-title mb-1"><%= player.playerName %></h5>
+          <div class="mb-2">
+            <strong>Team:</strong> <%= player.team.teamName %><br />
+            <strong>Cost:</strong> $<%= player.cost.toLocaleString() %><br />
+            <strong>Information:</strong> <%= player.information %>
+          </div>
+          <a href="/players/<%= player._id %>" class="btn btn-outline-primary btn-sm">View Details</a>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</div>
 
 <style>
-.horizontal-scroll {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 24px;
-    padding-bottom: 8px;
-    scroll-snap-type: x mandatory;
-}
-.player-card {
-    flex: 0 0 auto;
-    scroll-snap-align: start;
+  .player-card {
     transition: transform 0.18s;
-}
-.player-card:hover {
+  }
+  .player-card:hover {
     transform: translateY(-6px) scale(1.03);
     box-shadow: 0 8px 32px #0002;
-}
-</style> 
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
