@@ -6,6 +6,7 @@ const flash = require('connect-flash');
 const path = require('path');
 const methodOverride = require('method-override');
 const expressLayouts = require('express-ejs-layouts');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
@@ -20,6 +21,7 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/asm3', {
 
 // Passport config
 require('./config/passport')(passport);
+require('./config/passportReact')(passport);
 
 // Middleware
 app.use(express.json());
@@ -54,12 +56,26 @@ app.use((req, res, next) => {
     next();
 });
 
-// Routes
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// EJS Routes
 app.use('/', require('./routes/index'));
 app.use('/auth', require('./routes/auth'));
 app.use('/teams', require('./routes/teams'));
 app.use('/players', require('./routes/players'));
 app.use('/accounts', require('./routes/accounts'));
+
+// API Routes
+app.use('/jsonRoute/players', require('./jsonRoute/players'));
+app.use('/jsonRoute/teams', require('./jsonRoute/teams'));
+app.use('/jsonRoute/accounts', require('./jsonRoute/accounts'));
+app.use('/jsonRoute', require('./jsonRoute/index'));
+app.use('/jsonRoute/auth', require('./jsonRoute/auth'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
