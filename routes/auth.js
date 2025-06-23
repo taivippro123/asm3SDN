@@ -64,10 +64,36 @@ router.get('/logout', (req, res) => {
 });
 
 // Profile Page
-router.get('/profile', isAuthenticated, (req, res) => {
-    res.render('auth/profile', {
-        user: req.user
-    });
+router.get('/profile', isAuthenticated, async (req, res) => {
+    try {
+        const Player = require('../models/Player');
+        const memberId = req.user._id;
+        const players = await Player.find({ 'comments.author': memberId })
+            .select('playerName comments')
+            .lean();
+        const comments = [];
+        players.forEach(player => {
+            player.comments.forEach(comment => {
+                if (comment.author.toString() === memberId.toString()) {
+                    comments.push({
+                        playerId: player._id,
+                        playerName: player.playerName,
+                        rating: comment.rating,
+                        content: comment.content,
+                        createdAt: comment.createdAt,
+                    });
+                }
+            });
+        });
+        res.render('auth/profile', {
+            user: req.user,
+            comments
+        });
+    } catch (err) {
+        console.error(err);
+        req.flash('error_msg', 'Error loading profile');
+        res.redirect('/');
+    }
 });
 
 // Update Profile

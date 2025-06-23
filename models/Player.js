@@ -47,4 +47,9 @@ const playerSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
+// Static method: check if a team already has a captain
+playerSchema.statics.teamHasCaptain = async function(teamId) {
+    return await this.exists({ team: teamId, isCaptain: true });
+};
+
 module.exports = mongoose.model('Player', playerSchema); 

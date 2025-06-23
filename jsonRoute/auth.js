@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const Member = require('../models/Member');
 const { isAuthenticated } = require('../middleware/auth');
+const Player = require('../models/Player');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -48,8 +49,46 @@ router.post('/logout', (req, res) => {
 });
 
 // Get profile
-router.get('/profile', isAuthenticated, (req, res) => {
-    res.json({ success: true, data: { _id: req.user._id, membername: req.user.membername, name: req.user.name, YOB: req.user.YOB, isAdmin: req.user.isAdmin } });
+router.get('/profile', isAuthenticated, async (req, res) => {
+    try {
+        const memberId = req.user._id;
+        const players = await Player.find({ 'comments.author': memberId })
+            .select('playerName comments')
+            .lean();
+
+        const comments = [];
+        players.forEach(player => {
+            player.comments.forEach(comment => {
+                if (comment.author.toString() === memberId.toString()) {
+                    comments.push({
+                        playerId: player._id,
+                        playerName: player.playerName,
+                        rating: comment.rating,
+                        content: comment.content,
+                        createdAt: comment.createdAt,
+                    });
+                }
+            });
+        });
+
+        res.json({
+            success: true,
+            data: {
+                user: {
+                    _id: req.user._id,
+                    name: req.user.name,
+                    YOB: req.user.YOB,
+                    membername: req.user.membername,
+                    isAdmin: req.user.isAdmin,
+                    googleId: req.user.googleId || null
+                },
+                comments
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Error loading profile' });
+    }
 });
 
 // Update profile

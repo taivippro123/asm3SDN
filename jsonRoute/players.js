@@ -43,6 +43,12 @@ router.get('/:id', async (req, res) => {
 router.post('/', isAdmin, async (req, res) => {
     try {
         const { playerName, image, cost, isCaptain, information, team } = req.body;
+        if (isCaptain === 'on' || isCaptain === true || isCaptain === 'true') {
+            const hasCaptain = await Player.teamHasCaptain(team);
+            if (hasCaptain) {
+                return res.status(400).json({ success: false, message: 'This team already has a captain!' });
+            }
+        }
         const player = new Player({
             playerName,
             image,
@@ -62,6 +68,12 @@ router.post('/', isAdmin, async (req, res) => {
 router.put('/:id', isAdmin, async (req, res) => {
     try {
         const { playerName, image, cost, isCaptain, information, team } = req.body;
+        if (isCaptain === 'on' || isCaptain === true || isCaptain === 'true') {
+            const hasCaptain = await Player.exists({ team, isCaptain: true, _id: { $ne: req.params.id } });
+            if (hasCaptain) {
+                return res.status(400).json({ success: false, message: 'This team already has a captain!' });
+            }
+        }
         const updated = await Player.findByIdAndUpdate(req.params.id, {
             playerName,
             image,
@@ -90,6 +102,9 @@ router.delete('/:id', isAdmin, async (req, res) => {
 
 // Add comment (authenticated members only)
 router.post('/:id/comments', isAuthenticated, async (req, res) => {
+    if (req.user.isAdmin) {
+        return res.status(403).json({ success: false, message: 'Admins are not allowed to comment' });
+    }
     try {
         const player = await Player.findById(req.params.id);
         if (!player) {
@@ -109,9 +124,62 @@ router.post('/:id/comments', isAuthenticated, async (req, res) => {
             author: req.user._id
         });
         await player.save();
-        res.json({ success: true, message: 'Comment added successfully', data: player });
+        return res.json({ success: true, message: 'Comment added successfully', data: player });
     } catch (err) {
-        res.status(500).json({ success: false, message: 'Error adding comment' });
+        return res.status(500).json({ success: false, message: 'Error adding comment' });
+    }
+});
+
+// Edit comment (only by the comment's author, not admin)
+router.put('/:id/comments/:commentId/edit', isAuthenticated, async (req, res) => {
+    if (req.user.isAdmin) {
+        return res.status(403).json({ success: false, message: 'Admins are not allowed to edit comments' });
+    }
+    try {
+        const player = await Player.findById(req.params.id);
+        if (!player) {
+            return res.status(404).json({ success: false, message: 'Player not found' });
+        }
+        const comment = player.comments.id(req.params.commentId);
+        if (!comment) {
+            return res.status(404).json({ success: false, message: 'Comment not found' });
+        }
+        if (comment.author.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'You are not authorized to edit this comment' });
+        }
+        comment.rating = req.body.rating;
+        comment.content = req.body.content;
+        await player.save();
+        return res.json({ success: true, message: 'Comment updated successfully', data: player });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: 'Error editing comment' });
+    }
+});
+
+// Delete comment (only by the comment's author, not admin)
+router.delete('/:id/comments/:commentId/delete', isAuthenticated, async (req, res) => {
+    if (req.user.isAdmin) {
+        return res.status(403).json({ success: false, message: 'Admins are not allowed to delete comments' });
+    }
+    try {
+        const player = await Player.findById(req.params.id);
+        if (!player) {
+            return res.status(404).json({ success: false, message: 'Player not found' });
+        }
+        const comment = player.comments.id(req.params.commentId);
+        if (!comment) {
+            return res.status(404).json({ success: false, message: 'Comment not found' });
+        }
+        if (comment.author.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'You are not authorized to delete this comment' });
+        }
+        // Sử dụng pull thay cho remove
+        player.comments.pull(comment._id);
+        await player.save();
+        return res.json({ success: true, message: 'Comment deleted successfully', data: player });
+    } catch (err) {
+        console.error('Delete comment error:', err);
+        return res.status(500).json({ success: false, message: 'Error deleting comment', error: err.message });
     }
 });
 

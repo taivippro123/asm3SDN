@@ -50,5 +50,40 @@
             </div>
         </div>
         <% } %>
+        <% if (!user.isAdmin) { %>
+        <% if (comments && comments.length > 0) { %>
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-white border-bottom-0">
+                <h4 class="mb-0">Your Comments for Players</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Player Name</th>
+                                <th>Rating</th>
+                                <th>Content</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% comments.forEach(comment => { %>
+                                <tr>
+                                    <td><a href="/players/<%= comment.playerId %>"><%= comment.playerName %></a></td>
+                                    <td><%= comment.rating %></td>
+                                    <td><%= comment.content %></td>
+                                    <td><%= new Date(comment.createdAt).toLocaleString() %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <% } else { %>
+            <div class="alert alert-info mt-4">You have not commented on any players yet.</div>
+        <% } %>
+        <% } %>
     </div>
 </div> 
