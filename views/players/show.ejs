@@ -252,40 +252,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <!-- Nút mở modal xóa -->
-                    <button class="btn btn-sm btn-outline-danger mt-2 ms-2" data-bs-toggle="modal"
-                        data-bs-target="#deleteCommentModal-<%= comment._id %>">Delete</button>
-
-                    <!-- Modal xác nhận xóa comment -->
-                    <div class="modal fade" id="deleteCommentModal-<%= comment._id %>" tabindex="-1"
-                        aria-labelledby="deleteCommentModalLabel-<%= comment._id %>" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content border-danger shadow">
-                                <div class="modal-header bg-danger text-white">
-                                    <h5 class="modal-title" id="deleteCommentModalLabel-<%= comment._id %>">
-                                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Delete Comment
-                                    </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Are you sure you want to delete this comment?</p>
-                                    <p class="fst-italic text-muted">"<%= comment.content.length> 100 ?
-                                            comment.content.substring(0, 100) + '...' : comment.content %>"</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Cancel</button>
-                                    <form action="/players/<%= player._id %>/comments/<%= comment._id %>/delete"
-                                        method="POST">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="btn btn-danger">Delete</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <form action="/players/<%= player._id %>?_method=DELETE" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete Player</button>
+                    </form>
                 </div>
             </div>
         </div>
